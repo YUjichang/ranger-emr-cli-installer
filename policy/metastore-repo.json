@@ -1,5 +1,5 @@
 {
-  "name": "HIVE_METASOTRE_@EMR_CLUSTER_ID@",
+  "name": "HIVE_METASTORE_@EMR_CLUSTER_ID@",
   "description": "Hive Metastore Repo",
   "repositoryType": "Hive",
   "isActive": true,
