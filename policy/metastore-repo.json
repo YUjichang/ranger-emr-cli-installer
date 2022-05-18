@@ -1,0 +1,13 @@
+{
+  "name": "HIVE_METASOTRE_@EMR_CLUSTER_ID@",
+  "description": "Hive Metastore Repo",
+  "repositoryType": "Hive",
+  "isActive": true,
+  "config": "{
+   \"username\": \"hive\",
+   \"password\": \"hive\",
+   \"jdbc.driverClassName\": \"org.apache.hive.jdbc.HiveDriver\",
+   \"jdbc.url\": \"thrift://@EMR_HIVE_SERVER2@:9083\",
+   \"commonNameForCertificate\": \"\"
+ }"
+}

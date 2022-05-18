@@ -413,6 +413,9 @@ installRangerPlugins() {
         hbase)
             installRangerHBasePlugin
             ;;
+        metastore)
+            installRangerMetastorePlugin
+            ;;
         *)
             echo "ERROR!! No [$plugin] plugin or it is not supported by this tool yet."
             ;;
@@ -452,6 +455,16 @@ initRangerHbaseRepo() {
     sed -i "s|@EMR_CLUSTER_ID@|$(getEmrClusterId)|g" $APP_HOME/policy/.hbase-repo.json
     sed -i "s|@EMR_ZK_QUORUM@|$EMR_ZK_QUORUM|g" $APP_HOME/policy/.hbase-repo.json
     curl -iv -u admin:admin -d @$APP_HOME/policy/.hbase-repo.json -H "Content-Type: application/json" \
+        -X POST http://$RANGER_HOST:6080/service/public/api/repository/
+    echo ""
+}
+
+initRangerMetastoreRepo() {
+    printHeading "INIT RANGER HIVE Metastore REPO"
+    cp $APP_HOME/policy/metastore-repo.json $APP_HOME/policy/.metastore-repo.json
+    sed -i "s|@EMR_CLUSTER_ID@|$(getEmrClusterId)|g" $APP_HOME/policy/.metastore-repo.json
+    sed -i "s|@EMR_HIVE_SERVER2@|$EMR_HIVE_SERVER2|g" $APP_HOME/policy/.metastore-repo.json
+    curl -iv -u admin:admin -d @$APP_HOME/policy/.metastore-repo.json -H "Content-Type: application/json" \
         -X POST http://$RANGER_HOST:6080/service/public/api/repository/
     echo ""
 }
@@ -530,6 +543,38 @@ EOF
     restartHiveServer2
 }
 
+installRangerMetastorePlugin() {
+    # Must init repo first before install plugin
+    initRangerMetastoreRepo
+    printHeading "INSTALL RANGER HIVE Metastore PLUGIN"
+    tar -zxvf /tmp/ranger-$RANGER_VERSION-metastore-plugin.tar.gz -C /tmp/ &>/dev/null
+    installFilesDir=/tmp/ranger-$RANGER_VERSION-metastore-plugin
+    confFile=$installFilesDir/install.properties
+    # backup install.properties
+    cp $confFile $confFile.$(date +%s)
+    cp $APP_HOME/conf/ranger-plugin/metastore-template.properties $confFile
+    sed -i "s|@EMR_CLUSTER_ID@|$(getEmrClusterId)|g" $confFile
+    sed -i "s|@SOLR_HOST@|$SOLR_HOST|g" $confFile
+    sed -i "s|@RANGER_HOST@|$RANGER_HOST|g" $confFile
+    installHome=/opt/ranger-$RANGER_VERSION-metastore-plugin
+    for masterNode in "${EMR_MASTER_NODES[@]}"; do
+        printHeading "INSTALL RANGER HIVE Metastore PLUGIN ON MASTER NODE [ $masterNode ] "
+        ssh -o StrictHostKeyChecking=no -i $EMR_SSH_KEY -T hadoop@$masterNode sudo rm -rf $installFilesDir $installHome
+        # NOTE: we can't copy files from local /tmp/plugin-dir to remote /opt/plugin-dir,
+        # because hadoop user has no write permission at /opt
+        scp -o StrictHostKeyChecking=no -i $EMR_SSH_KEY -r $installFilesDir hadoop@$masterNode:$installFilesDir &>/dev/null
+        ssh -o StrictHostKeyChecking=no -i $EMR_SSH_KEY -T hadoop@$masterNode <<EOF
+            sudo cp -r $installFilesDir $installHome
+            # the enable-hive-plugin.sh just work with open source version of hadoop,
+            # for emr, we have to copy ranger jars to /usr/lib/hive/lib/
+            # sudo find $installHome/lib -name *.jar -exec cp {} /usr/lib/hive/lib/ \;
+            sudo sh $installHome/enable-metastore-plugin.sh
+EOF
+    done
+    restartHcatalog
+    restartHiveServer2
+}
+
 restartHiveServer2() {
     printHeading "RESTART HIVESERVER2"
     for masterNode in "${EMR_MASTER_NODES[@]}"; do
@@ -538,6 +583,18 @@ restartHiveServer2() {
         sleep $RESTART_INTERVAL
         echo "START HIVESERVER2 ON MASTER NODE [ $masterNode ]"
         ssh -o StrictHostKeyChecking=no -i $EMR_SSH_KEY -T hadoop@$masterNode sudo systemctl start hive-server2
+        sleep $RESTART_INTERVAL
+    done
+}
+
+restartHcatalog() {
+    printHeading "RESTART HCATALOG"
+    for masterNode in "${EMR_MASTER_NODES[@]}"; do
+        echo "STOP HCATALOG ON MASTER NODE [ $masterNode ]"
+        ssh -o StrictHostKeyChecking=no -i $EMR_SSH_KEY -T hadoop@$masterNode sudo systemctl stop hive-hcatalog-server
+        sleep $RESTART_INTERVAL
+        echo "START HCATALOG ON MASTER NODE [ $masterNode ]"
+        ssh -o StrictHostKeyChecking=no -i $EMR_SSH_KEY -T hadoop@$masterNode sudo systemctl start hive-hcatalog-server
         sleep $RESTART_INTERVAL
     done
 }
