@@ -83,7 +83,7 @@ installMySqlCliIfNotExists() {
 testMySqlConnectivity() {
     printHeading "TEST MYSQL CONNECTIVITY"
     installMySqlCliIfNotExists
-    mysql -h$MYSQL_HOST -P$MYSQL_PORT -u$MYSQL_USER -p$MYSQL_PASSWORD -e "select 1;" &>/dev/null
+    mysql -h$MYSQL_HOST -P$MYSQL_PORT -u$MYSQL_USER -p$MYSQL_ROOT_PASSWORD -e "select 1;" &>/dev/null
     if [ "$?" = "0" ]; then
         echo "Connecting to mysql server is SUCCESSFUL!!"
     else
