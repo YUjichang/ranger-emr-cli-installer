@@ -298,6 +298,7 @@ downloadRanger() {
         printHeading "DOWNLOAD RANGER"
         wget https://github.com/bluishglc/ranger-emr-cfn-installer/releases/download/v1.0/ranger-repo.tar.gz -O /tmp/ranger-repo.tar.gz
         tar -zxvf /tmp/ranger-repo.tar.gz -C /tmp &>/dev/null
+        wget https://deepexi-spaas.obs.cn-southwest-2.myhuaweicloud.com/download/mid/ranger-2.1.0-metastore-plugin.tar.gz -O /tmp/ranger-2.1.0-metastore-plugin.tar.gz 
         rm -rf /tmp/ranger-repo.tar.gz
     fi
 }
