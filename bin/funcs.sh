@@ -153,6 +153,8 @@ initRangerAdminDb() {
     printHeading "INIT RANGER DB"
     cp $APP_HOME/sql/init-ranger-db.sql $APP_HOME/sql/.init-ranger-db.sql
     sed -i "s|@DB_HOST@|$MYSQL_HOST|g" $APP_HOME/sql/.init-ranger-db.sql
+    sed -i "s|@DB_RANGER_NAME@|$MYSQL_RANGER_DB|g" $APP_HOME/sql/.init-ranger-db.sql
+    sed -i "s|@DB_RANGER_USER@|$MYSQL_RANGER_DB_USER|g" $APP_HOME/sql/.init-ranger-db.sql
     sed -i "s|@MYSQL_RANGER_DB_USER_PASSWORD@|$MYSQL_RANGER_DB_USER_PASSWORD|g" $APP_HOME/sql/.init-ranger-db.sql
     mysql -h$MYSQL_HOST -P$MYSQL_PORT -u$MYSQL_USER -p$MYSQL_ROOT_PASSWORD -s --prompt=nowarning --connect-expired-password <$APP_HOME/sql/.init-ranger-db.sql
 }
@@ -178,6 +180,8 @@ makeRangerAdminInstallPropForLdap() {
     sed -i "s|@DB_USER@|$MYSQL_USER|g" $confFile
     sed -i "s|@DB_HOST@|$MYSQL_HOST|g" $confFile
     sed -i "s|@DB_ROOT_PASSWORD@|$MYSQL_ROOT_PASSWORD|g" $confFile
+    sed -i "s|@DB_RANGER_NAME@|$MYSQL_RANGER_DB|g" $confFile
+    sed -i "s|@DB_RANGER_USER@|$MYSQL_RANGER_DB_USER|g" $confFile
     sed -i "s|@SOLR_HOST@|$SOLR_HOST|g" $confFile
     sed -i "s|@DB_PASSWORD@|$MYSQL_RANGER_DB_USER_PASSWORD|g" $confFile
     sed -i "s|@LDAP_URL@|$LDAP_URL|g" $confFile

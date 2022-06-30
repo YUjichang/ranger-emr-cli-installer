@@ -7,8 +7,8 @@ parseArgs() {
     fi
     optString="ranger-host:,auth-type:,ad-domain:,ad-url:,ad-base-dn:,ad-bind-dn:,ad-bind-password:,ad-user-object-class:,\
     ldap-url:,ldap-user-dn-pattern:,ldap-group-search-filter:,ldap-base-dn:,ldap-bind-dn:,ldap-bind-password:,ldap-user-object-class:,\
-    java-home:,skip-install-mysql:,mysql-host:,mysql-port:,mysql-user:,mysql-root-password:,mysql-ranger-db-user-password:,\
-    skip-install-solr:,solr-host:,ranger-version:,ranger-repo-url:,restart-interval:,\
+    java-home:,skip-install-mysql:,mysql-host:,mysql-port:,mysql-user:,mysql-root-password:,mysql-ranger-db-user-password:,mysql-ranger-db:,\
+    mysql-ranger-db-user:,skip-install-solr:,solr-host:,ranger-version:,ranger-repo-url:,restart-interval:,\
     ranger-plugins:,emr-master-nodes:,emr-core-nodes:,emr-ssh-key:"
     # IMPORTANT!! -o option can not be omitted, even there are no any short options!
     # otherwise, parsing will go wrong!
@@ -112,6 +112,14 @@ parseArgs() {
                 ;;
             --mysql-ranger-db-user-password)
                 MYSQL_RANGER_DB_USER_PASSWORD="$2"
+                shift 2
+                ;;
+            --mysql-ranger-db)
+                MYSQL_RANGER_DB="$2"
+                shift 2
+                ;;
+            --mysql-ranger-db-user)
+                MYSQL_RANGER_DB_USER="$2"
                 shift 2
                 ;;
             --skip-install-solr)
@@ -220,6 +228,8 @@ resetConfigs() {
     MYSQL_PORT=$DEFAULT_DB_PORT
     MYSQL_ROOT_PASSWORD=$DEFAULT_DB_PASSWORD
     MYSQL_RANGER_DB_USER_PASSWORD=$DEFAULT_DB_PASSWORD
+    MYSQL_RANGER_DB=$DEFAULT_DB_RANGER_NAME
+    MYSQL_RANGER_DB_USER=$DEFAULT_DB_RANGER_USER
     SOLR_HOST=$DEFAULT_HOSTNAME
     RANGER_VERSION=$DEFAULT_RANGER_VERSION
     RANGER_HOST=$DEFAULT_HOSTNAME
