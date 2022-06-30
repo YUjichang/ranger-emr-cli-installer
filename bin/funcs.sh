@@ -60,7 +60,7 @@ installMySqlIfNotExists() {
         tmpPasswd="${tmpPasswdMsg##* }"
         echo "get mysql initial password: $tmpPasswd"
         cp $APP_HOME/sql/init-mysql.sql $APP_HOME/sql/.init-mysql.sql
-        sed -i "s|@MYSQL_ROOT_PASSWORD@|$MYSQL_ROOT_PASSWORD|g" "$APP_HOME/sql/.init-mysql.sql"
+        sed -i "s|@MYSQL_ROOT_PASSWORD@|$MYSQL_PASSWORD|g" "$APP_HOME/sql/.init-mysql.sql"
         # -h must be "localhost", not host IP!
         mysql -hlocalhost -uroot -p"$tmpPasswd" -s --prompt=nowarning --connect-expired-password <"$APP_HOME/sql/.init-mysql.sql"
     fi
@@ -83,7 +83,7 @@ installMySqlCliIfNotExists() {
 testMySqlConnectivity() {
     printHeading "TEST MYSQL CONNECTIVITY"
     installMySqlCliIfNotExists
-    mysql -h$MYSQL_HOST -uroot -p$MYSQL_ROOT_PASSWORD -e "select 1;" &>/dev/null
+    mysql -h$MYSQL_HOST -P$MYSQL_PORT -u$MYSQL_USER -p$MYSQL_PASSWORD -e "select 1;" &>/dev/null
     if [ "$?" = "0" ]; then
         echo "Connecting to mysql server is SUCCESSFUL!!"
     else
@@ -154,7 +154,7 @@ initRangerAdminDb() {
     cp $APP_HOME/sql/init-ranger-db.sql $APP_HOME/sql/.init-ranger-db.sql
     sed -i "s|@DB_HOST@|$MYSQL_HOST|g" $APP_HOME/sql/.init-ranger-db.sql
     sed -i "s|@MYSQL_RANGER_DB_USER_PASSWORD@|$MYSQL_RANGER_DB_USER_PASSWORD|g" $APP_HOME/sql/.init-ranger-db.sql
-    mysql -h$MYSQL_HOST -uroot -p$MYSQL_ROOT_PASSWORD -s --prompt=nowarning --connect-expired-password <$APP_HOME/sql/.init-ranger-db.sql
+    mysql -h$MYSQL_HOST -P$MYSQL_PORT -u$MYSQL_USER -p$MYSQL_PASSWORD -s --prompt=nowarning --connect-expired-password <$APP_HOME/sql/.init-ranger-db.sql
 }
 
 makeRangerAdminInstallPropForAd() {
@@ -175,8 +175,9 @@ makeRangerAdminInstallPropForAd() {
 makeRangerAdminInstallPropForLdap() {
     confFile="$1"
     cp $APP_HOME/conf/ranger-admin/ldap-template.properties $confFile
+    sed -i "s|@DB_USER@|$MYSQL_USER|g" $confFile
     sed -i "s|@DB_HOST@|$MYSQL_HOST|g" $confFile
-    sed -i "s|@DB_ROOT_PASSWORD@|$MYSQL_ROOT_PASSWORD|g" $confFile
+    sed -i "s|@DB_ROOT_PASSWORD@|$MYSQL_PASSWORD|g" $confFile
     sed -i "s|@SOLR_HOST@|$SOLR_HOST|g" $confFile
     sed -i "s|@DB_PASSWORD@|$MYSQL_RANGER_DB_USER_PASSWORD|g" $confFile
     sed -i "s|@LDAP_URL@|$LDAP_URL|g" $confFile

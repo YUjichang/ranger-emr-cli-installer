@@ -7,7 +7,7 @@ parseArgs() {
     fi
     optString="ranger-host:,auth-type:,ad-domain:,ad-url:,ad-base-dn:,ad-bind-dn:,ad-bind-password:,ad-user-object-class:,\
     ldap-url:,ldap-user-dn-pattern:,ldap-group-search-filter:,ldap-base-dn:,ldap-bind-dn:,ldap-bind-password:,ldap-user-object-class:,\
-    java-home:,skip-install-mysql:,mysql-host:,mysql-root-password:,mysql-ranger-db-user-password:,\
+    java-home:,skip-install-mysql:,mysql-host:,mysql-port:,mysql-user:,mysql-password:,mysql-ranger-db-user-password:,\
     skip-install-solr:,solr-host:,ranger-version:,ranger-repo-url:,restart-interval:,\
     ranger-plugins:,emr-master-nodes:,emr-core-nodes:,emr-ssh-key:"
     # IMPORTANT!! -o option can not be omitted, even there are no any short options!
@@ -98,8 +98,16 @@ parseArgs() {
                 MYSQL_HOST="$2"
                 shift 2
                 ;;
-            --mysql-root-password)
-                MYSQL_ROOT_PASSWORD="$2"
+            --mysql-port)
+                MYSQL_PORT="$2"
+                shift 2
+                ;;
+            --mysql-user)
+                MYSQL_USER="$2"
+                shift 2
+                ;;
+            --mysql-password)
+                MYSQL_PASSWORD="$2"
                 shift 2
                 ;;
             --mysql-ranger-db-user-password)
