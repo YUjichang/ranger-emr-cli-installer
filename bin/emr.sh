@@ -46,7 +46,7 @@ createEmrSecurityConfiguration() {
                 jq 'del(.AuthenticationConfiguration.KerberosConfiguration.ClusterDedicatedKdcConfiguration.CrossRealmTrustConfiguration)' \
                 $APP_HOME/conf/emr/security-configuration-template.json > $confFile
             else
-                jq 'del(.AuthenticationConfiguration.KerberosConfiguration.ExternalKdcConfiguration.ClusterDedicatedKdcConfiguration.CrossRealmTrustConfiguration)' \
+                jq 'del(.AuthenticationConfiguration.KerberosConfiguration.ClusterDedicatedKdcConfiguration.CrossRealmTrustConfiguration)|del(.AuthenticationConfiguration.KerberosConfiguration.ExternalKdcConfiguration)' \
                 $APP_HOME/conf/emr/security-configuration-template.json > $confFile
             fi
         else
