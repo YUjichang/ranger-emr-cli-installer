@@ -21,6 +21,8 @@ configSecurityConfigurationProps() {
     sed -i "s|@RANGER_ADMIN_SECRET_ARN@|$rangerAdminSecretArn|g" $confFile
     sed -i "s|@RANGER_PLUGIN_SECRET_ARN@|$rangerPluginSecretArn|g" $confFile
     sed -i "s|@AUDIT_EVENTS_LOG_GROUP_ARN@|$auditEventsLogGroupArn|g" $confFile
+    sed -i "s|@KDC_HOST@|$KERBEROS_KDC_HOST|g" $confFile
+    sed -i "s|@KDC_PROVIDER@|$KERBEROS_TYPE|g" $confFile
 }
 
 createEmrSecurityConfiguration() {
@@ -40,8 +42,12 @@ createEmrSecurityConfiguration() {
             cp -f $APP_HOME/conf/emr/security-configuration-template.json $confFile
         elif [ "$AUTH_PROVIDER" = "openldap" ]; then
             # for ad, copy a new version from template file, but remove CrossRealmTrustConfiguration
-            jq 'del(.AuthenticationConfiguration.KerberosConfiguration.ClusterDedicatedKdcConfiguration.CrossRealmTrustConfiguration)' \
-            $APP_HOME/conf/emr/security-configuration-template.json > $confFile
+            if [ "$KERBEROS_TYPE" == "ExternalKdc" ]; then
+                jq 'del(.AuthenticationConfiguration.KerberosConfiguration.ClusterDedicatedKdcConfiguration.CrossRealmTrustConfiguration)' \
+                $APP_HOME/conf/emr/security-configuration-template.json > $confFile
+            else:
+                jq 'del(.AuthenticationConfiguration.KerberosConfiguration.ExternalKdcConfiguration.ClusterDedicatedKdcConfiguration.CrossRealmTrustConfiguration)' \
+                $APP_HOME/conf/emr/security-configuration-template.json > $confFile
         else
             echo "Invalid authentication type, only AD and LDAP are supported!"
             exit 1

@@ -22,7 +22,7 @@ OPT_KEYS=(
     OPENLDAP_BASE_DN OPENLDAP_ROOT_CN OPENLDAP_ROOT_PASSWORD OPENLDAP_USERS_BASE_DN
     JAVA_HOME SKIP_INSTALL_MYSQL MYSQL_HOST MYSQL_ROOT_PASSWORD MYSQL_RANGER_DB_USER_PASSWORD MYSQL_PORT MYSQL_USER MYSQL_RANGER_DB_USER MYSQL_RANGER_DB 
     SKIP_INSTALL_SOLR SOLR_HOST RANGER_HOST RANGER_PORT RANGER_REPO_URL RANGER_VERSION RANGER_PLUGINS
-    KERBEROS_KDC_HOST SKIP_MIGRATE_KERBEROS_DB OPENLDAP_HOST
+    KERBEROS_KDC_HOST SKIP_MIGRATE_KERBEROS_DB OPENLDAP_HOST KERBEROS_TYPE
     EMR_CLUSTER_ID MASTER_INSTANCE_GROUP_ID SLAVE_INSTANCE_GROUP_IDS EMR_MASTER_NODES EMR_SLAVE_NODES EMR_CLUSTER_NODES EMR_ZK_QUORUM EMR_HDFS_URL EMR_FIRST_MASTER_NODE
     EXAMPLE_GROUP EXAMPLE_USERS SKIP_CONFIGURE_HUE RESTART_INTERVAL
 )
@@ -276,7 +276,7 @@ parseArgs() {
 
     optString="\
         region:,ssh-key:,access-key-id:,secret-access-key:,java-home:,\
-        skip-migrate-kerberos-db:,kerberos-realm:,kerberos-kdc-host:,kerberos-kadmin-password:,\
+        skip-migrate-kerberos-db:,kerberos-realm:,kerberos-kdc-host:,kerberos-kadmin-password:,kerberos-type:,\
         solution:,enable-cross-realm-trust:,trusting-realm:,trusting-domain:,trusting-host:,ranger-version:,ranger-repo-url:,restart-interval:,ranger-host:,ranger-secrets-dir:,ranger-plugins:,\
         auth-provider:,ad-domain:,ad-base-dn:,ad-ranger-bind-dn:,ad-ranger-bind-password:,ad-hue-dn:,ad-hue-password:,ad-user-object-class:,\
         openldap-host:,openldap-base-dn:,openldap-root-cn:,openldap-root-password:,example-users:,\
@@ -366,6 +366,10 @@ parseArgs() {
                 ;;
             --kerberos-kadmin-password)
                 KERBEROS_KADMIN_PASSWORD="${2}"
+                shift 2
+                ;;
+            --kerberos-type)
+                KERBEROS_TYPE="${2}"
                 shift 2
                 ;;
             --enable-cross-realm-trust)
@@ -672,6 +676,7 @@ resetAllOpts() {
     AUDIT_EVENTS_LOG_GROUP="/aws-emr/audit-events"
     RANGER_HOST=$(hostname -f)
     KERBEROS_KADMIN_PASSWORD=$COMMON_DEFAULT_PASSWORD
+    KERBEROS_TYPE="ClusterDedicatedKdc"
     OLKB_EXAMPLE_USER_PASSWORD=$COMMON_DEFAULT_PASSWORD
     MYSQL_HOST=$RANGER_HOST
     MYSQL_ROOT_PASSWORD=$COMMON_DEFAULT_PASSWORD
