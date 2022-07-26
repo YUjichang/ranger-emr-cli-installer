@@ -3,6 +3,7 @@
     "KerberosConfiguration": {
       "Provider": "@KDC_PROVIDER@",
       "ExternalKdcConfiguration": {
+        "TicketLifetimeInHours": 24,
         "KdcServerType": "Single",
         "AdminServer": "@KDC_HOST@:749",
         "KdcServer": "@KDC_HOST@:88"

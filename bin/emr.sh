@@ -43,7 +43,7 @@ createEmrSecurityConfiguration() {
         elif [ "$AUTH_PROVIDER" = "openldap" ]; then
             # for ad, copy a new version from template file, but remove CrossRealmTrustConfiguration
             if [ "$KERBEROS_TYPE" == "ExternalKdc" ]; then
-                jq 'del(.AuthenticationConfiguration.KerberosConfiguration.ClusterDedicatedKdcConfiguration.CrossRealmTrustConfiguration)' \
+                jq 'del(.AuthenticationConfiguration.KerberosConfiguration.ClusterDedicatedKdcConfiguration)' \
                 $APP_HOME/conf/emr/security-configuration-template.json > $confFile
             else
                 jq 'del(.AuthenticationConfiguration.KerberosConfiguration.ClusterDedicatedKdcConfiguration.CrossRealmTrustConfiguration)|del(.AuthenticationConfiguration.KerberosConfiguration.ExternalKdcConfiguration)' \
