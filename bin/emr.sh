@@ -45,9 +45,10 @@ createEmrSecurityConfiguration() {
             if [ "$KERBEROS_TYPE" == "ExternalKdc" ]; then
                 jq 'del(.AuthenticationConfiguration.KerberosConfiguration.ClusterDedicatedKdcConfiguration.CrossRealmTrustConfiguration)' \
                 $APP_HOME/conf/emr/security-configuration-template.json > $confFile
-            else:
+            else
                 jq 'del(.AuthenticationConfiguration.KerberosConfiguration.ExternalKdcConfiguration.ClusterDedicatedKdcConfiguration.CrossRealmTrustConfiguration)' \
                 $APP_HOME/conf/emr/security-configuration-template.json > $confFile
+            fi
         else
             echo "Invalid authentication type, only AD and LDAP are supported!"
             exit 1

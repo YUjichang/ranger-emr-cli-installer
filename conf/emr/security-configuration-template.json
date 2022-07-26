@@ -6,7 +6,7 @@
         "KdcServerType": "Single",
         "AdminServer": "@KDC_HOST@:749",
         "KdcServer": "@KDC_HOST@:88"
-      }
+      },
       "ClusterDedicatedKdcConfiguration": {
         "TicketLifetimeInHours": 24,
         "CrossRealmTrustConfiguration": {
