@@ -19,7 +19,7 @@ OPT_KEYS=(
     REGION ARN_ROOT SSH_KEY ACCESS_KEY_ID SECRET_ACCESS_KEY SOLUTION ENABLE_CROSS_REALM_TRUST TRUSTING_REALM TRUSTING_DOMAIN TRUSTING_HOST RANGER_SECRETS_DIR
     AUTH_PROVIDER AD_DOMAIN AD_URL AD_BASE_DN AD_RANGER_BIND_DN AD_RANGER_BIND_PASSWORD AD_HUE_BIND_DN AD_HUE_BIND_PASSWORD AD_USER_OBJECT_CLASS
     SKIP_INSTALL_OPENLDAP OPENLDAP_URL OPENLDAP_USER_DN_PATTERN OPENLDAP_GROUP_SEARCH_FILTER OPENLDAP_BASE_DN OPENLDAP_RANGER_BIND_DN OPENLDAP_RANGER_BIND_PASSWORD OPENLDAP_HUE_BIND_DN OPENLDAP_HUE_BIND_PASSWORD OPENLDAP_USER_OBJECT_CLASS
-    OPENLDAP_BASE_DN OPENLDAP_ROOT_CN OPENLDAP_ROOT_PASSWORD OPENLDAP_USERS_BASE_DN
+    OPENLDAP_ROOT_DN OPENLDAP_ROOT_CN OPENLDAP_ROOT_PASSWORD OPENLDAP_USERS_BASE_DN
     JAVA_HOME SKIP_INSTALL_MYSQL MYSQL_HOST MYSQL_ROOT_PASSWORD MYSQL_RANGER_DB_USER_PASSWORD MYSQL_PORT MYSQL_USER MYSQL_RANGER_DB_USER MYSQL_RANGER_DB 
     SKIP_INSTALL_SOLR SOLR_HOST RANGER_HOST RANGER_PORT RANGER_REPO_URL RANGER_VERSION RANGER_PLUGINS
     KERBEROS_KDC_HOST SKIP_MIGRATE_KERBEROS_DB OPENLDAP_HOST KERBEROS_TYPE
@@ -281,7 +281,7 @@ parseArgs() {
         auth-provider:,ad-domain:,ad-base-dn:,ad-ranger-bind-dn:,ad-ranger-bind-password:,ad-hue-dn:,ad-hue-password:,ad-user-object-class:,\
         openldap-host:,openldap-base-dn:,openldap-root-cn:,openldap-root-password:,example-users:,\
         sssd-bind-dn:,sssd-bind-dn-password:,\
-        skip-install-openldap:,openldap-user-dn-pattern:,openldap-group-search-filter:,openldap-base-dn:,openldap-ranger-bind-dn:,openldap-ranger-bind-password:,openldap-hue-bind-dn:,openldap-hue-bind-password:,openldap-user-object-class:,\
+        skip-install-openldap:,openldap-user-dn-pattern:,openldap-group-search-filter:,openldap-root-dn:,openldap-ranger-bind-dn:,openldap-ranger-bind-password:,openldap-hue-bind-dn:,openldap-hue-bind-password:,openldap-user-object-class:,\
         skip-install-mysql:,mysql-host:,mysql-root-password:,mysql-ranger-db-user-password:,mysql-port:,mysql-user:,skip-install-solr:,solr-host:,\
         mysql-ranger-db-user:,mysql-ranger-db:,emr-cluster-id:,skip-configure-hue:\
     "
@@ -569,8 +569,8 @@ parseArgs() {
                 OPENLDAP_URL="ldap://$OPENLDAP_HOST"
                 shift 2
                 ;;
-            --openldap-base-dn)
-                OPENLDAP_BASE_DN="$2"
+            --openldap-root-dn)
+                OPENLDAP_ROOT_DN="$2"
                 shift 2
                 ;;
             --openldap-root-cn)
