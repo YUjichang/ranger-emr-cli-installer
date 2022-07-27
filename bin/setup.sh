@@ -21,7 +21,7 @@ OPT_KEYS=(
     SKIP_INSTALL_OPENLDAP OPENLDAP_URL OPENLDAP_USER_DN_PATTERN OPENLDAP_GROUP_SEARCH_FILTER OPENLDAP_BASE_DN OPENLDAP_RANGER_BIND_DN OPENLDAP_RANGER_BIND_PASSWORD OPENLDAP_HUE_BIND_DN OPENLDAP_HUE_BIND_PASSWORD OPENLDAP_USER_OBJECT_CLASS
     OPENLDAP_ROOT_DN OPENLDAP_ROOT_CN OPENLDAP_ROOT_PASSWORD OPENLDAP_USERS_BASE_DN
     JAVA_HOME SKIP_INSTALL_MYSQL MYSQL_HOST MYSQL_ROOT_PASSWORD MYSQL_RANGER_DB_USER_PASSWORD MYSQL_PORT MYSQL_USER MYSQL_RANGER_DB_USER MYSQL_RANGER_DB 
-    SKIP_INSTALL_SOLR SOLR_HOST RANGER_HOST RANGER_PORT RANGER_REPO_URL RANGER_VERSION RANGER_PLUGINS
+    SKIP_INSTALL_SOLR SOLR_HOST RANGER_HOST RANGER_PORT RANGER_REPO_URL RANGER_VERSION RANGER_PLUGINS RANGER_PASSWORD
     KERBEROS_KDC_HOST SKIP_MIGRATE_KERBEROS_DB OPENLDAP_HOST KERBEROS_TYPE
     EMR_CLUSTER_ID MASTER_INSTANCE_GROUP_ID SLAVE_INSTANCE_GROUP_IDS EMR_MASTER_NODES EMR_SLAVE_NODES EMR_CLUSTER_NODES EMR_ZK_QUORUM EMR_HDFS_URL EMR_FIRST_MASTER_NODE
     EXAMPLE_GROUP EXAMPLE_USERS SKIP_CONFIGURE_HUE RESTART_INTERVAL
@@ -277,7 +277,7 @@ parseArgs() {
     optString="\
         region:,ssh-key:,access-key-id:,secret-access-key:,java-home:,\
         skip-migrate-kerberos-db:,kerberos-realm:,kerberos-kdc-host:,kerberos-kadmin-password:,kerberos-type:,\
-        solution:,enable-cross-realm-trust:,trusting-realm:,trusting-domain:,trusting-host:,ranger-version:,ranger-repo-url:,restart-interval:,ranger-host:,ranger-secrets-dir:,ranger-plugins:,\
+        solution:,enable-cross-realm-trust:,trusting-realm:,trusting-domain:,trusting-host:,ranger-version:,ranger-repo-url:,restart-interval:,ranger-host:,ranger-secrets-dir:,ranger-plugins:,ranger-password:,\
         auth-provider:,ad-domain:,ad-base-dn:,ad-ranger-bind-dn:,ad-ranger-bind-password:,ad-hue-dn:,ad-hue-password:,ad-user-object-class:,\
         openldap-host:,openldap-base-dn:,openldap-root-cn:,openldap-root-password:,example-users:,openldap-user-base-dn:,\
         sssd-bind-dn:,sssd-bind-dn-password:,\
@@ -533,6 +533,10 @@ parseArgs() {
                 IFS=', ' read -r -a RANGER_PLUGINS <<< "${2,,}"
                 shift 2
                 ;;
+            --ranger-password)
+                RANGER_PASSWORD="$2"
+                shift 2
+                ;;
             --emr-cluster-id)
                 # resolving emr cluster information MUST put off to init-ec2 done
                 # because resolving emr cluster nodes vars need jq & aws cli
@@ -677,6 +681,7 @@ resetAllOpts() {
     RANGER_VERSION='2.1.0'
     RANGER_REPO_URL="https://github.com/bluishglc/ranger-repo/releases/download"
     RANGER_SECRETS_DIR="/opt/ranger-$RANGER_VERSION-secrets"
+    RANGER_PASSOWRD="admin"
     AUDIT_EVENTS_LOG_GROUP="/aws-emr/audit-events"
     RANGER_HOST=$(hostname -f)
     KERBEROS_KADMIN_PASSWORD=$COMMON_DEFAULT_PASSWORD

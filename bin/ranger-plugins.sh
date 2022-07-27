@@ -120,12 +120,12 @@ installRangerEmrNativeEmrfsPlugin() {
     mkdir $installHome
     cp /tmp/ranger-repo/ranger-emr-emrfs-plugin-2.x.jar $installHome/
     echo "Create emrfs plugin servicedef..."
-    curl -k -iv -u admin:admin -d @$APP_HOME/policy/emr-native-emrfs-servicedef.json -H "Content-Type: application/json" \
+    curl -k -iv -u admin:$RANGER_PASSWORD -d @$APP_HOME/policy/emr-native-emrfs-servicedef.json -H "Content-Type: application/json" \
         -X POST $RANGER_URL/service/public/v2/api/servicedef
     echo "Create emrfs plugin repo..."
     cp $APP_HOME/policy/emr-native-emrfs-repo.json $APP_HOME/policy/.emr-native-emrfs-repo.json
     sed -i "s|@CERTIFICATE_CN@|$CERTIFICATE_CN|g" $APP_HOME/policy/.emr-native-emrfs-repo.json
-    curl -k -iv -u admin:admin -d @$APP_HOME/policy/.emr-native-emrfs-repo.json -H "Content-Type: application/json" \
+    curl -k -iv -u admin:$RANGER_PASSWORD -d @$APP_HOME/policy/.emr-native-emrfs-repo.json -H "Content-Type: application/json" \
         -X POST $RANGER_URL/service/public/v2/api/service/
     echo ""
 }
@@ -139,12 +139,12 @@ installRangerEmrNativeSparkPlugin() {
     mkdir $installHome
     cp /tmp/ranger-repo/ranger-spark-plugin-2.x.jar $installHome/
     echo "Create Spark plugin servicedef..."
-    curl -k -iv -u admin:admin -d @$APP_HOME/policy/emr-native-spark-servicedef.json -H "Content-Type: application/json" \
+    curl -k -iv -u admin:$RANGER_PASSWORD -d @$APP_HOME/policy/emr-native-spark-servicedef.json -H "Content-Type: application/json" \
         -X POST $RANGER_URL/service/public/v2/api/servicedef
     echo "Create Spark plugin repo..."
     cp $APP_HOME/policy/emr-native-spark-repo.json $APP_HOME/policy/.emr-native-spark-repo.json
     sed -i "s|@CERTIFICATE_CN@|$CERTIFICATE_CN|g" $APP_HOME/policy/.emr-native-spark-repo.json
-    curl -k -iv -u admin:admin -d @$APP_HOME/policy/.emr-native-spark-repo.json -H "Content-Type: application/json" \
+    curl -k -iv -u admin:$RANGER_PASSWORD -d @$APP_HOME/policy/.emr-native-spark-repo.json -H "Content-Type: application/json" \
         -X POST $RANGER_URL/service/public/v2/api/service/
     echo ""
 }
@@ -155,7 +155,7 @@ installRangerEmrNativeHivePlugin() {
     printHeading "INSTALL EMR NATIVE RANGER HIVE PLUGIN"
         cp $APP_HOME/policy/emr-native-hive-repo.json $APP_HOME/policy/.emr-native-hive-repo.json
     sed -i "s|@CERTIFICATE_CN@|$CERTIFICATE_CN|g" $APP_HOME/policy/.emr-native-hive-repo.json
-    curl -k -iv -u admin:admin -d @$APP_HOME/policy/.emr-native-hive-repo.json -H "Content-Type: application/json" \
+    curl -k -iv -u admin:$RANGER_PASSWORD -d @$APP_HOME/policy/.emr-native-hive-repo.json -H "Content-Type: application/json" \
         -X POST $RANGER_URL/service/public/api/repository/
     echo ""
 }
@@ -170,13 +170,13 @@ installRangerEmrNativeTrinoPlugin() {
     mkdir $installHome
     echo "Create Trino plugin servicedef..."
     # remove if exists
-    curl -k -iv -u admin:admin -X DELETE $RANGER_URL/service/public/v2/api/servicedef/name/amazon-emr-trino
-    curl -k -iv -u admin:admin -d @$APP_HOME/policy/emr-native-trino-servicedef.json -H "Content-Type: application/json" \
+    curl -k -iv -u admin:$RANGER_PASSWORD -X DELETE $RANGER_URL/service/public/v2/api/servicedef/name/amazon-emr-trino
+    curl -k -iv -u admin:$RANGER_PASSWORD -d @$APP_HOME/policy/emr-native-trino-servicedef.json -H "Content-Type: application/json" \
         -X POST $RANGER_URL/service/public/v2/api/servicedef
     echo "Create Trino plugin repo..."
     cp $APP_HOME/policy/emr-native-trino-repo.json $APP_HOME/policy/.emr-native-trino-repo.json
     sed -i "s|@CERTIFICATE_CN@|$CERTIFICATE_CN|g" $APP_HOME/policy/.emr-native-trino-repo.json
-    curl -k -iv -u admin:admin -d @$APP_HOME/policy/.emr-native-trino-repo.json -H "Content-Type: application/json" \
+    curl -k -iv -u admin:$RANGER_PASSWORD -d @$APP_HOME/policy/.emr-native-trino-repo.json -H "Content-Type: application/json" \
         -X POST $RANGER_URL/service/public/v2/api/service/
     echo ""
 }
@@ -188,13 +188,13 @@ initRangerOpenSourceHdfsRepo() {
     cp $APP_HOME/policy/open-source-hdfs-repo.json $APP_HOME/policy/.open-source-hdfs-repo.json
     sed -i "s|@EMR_CLUSTER_ID@|$EMR_CLUSTER_ID|g" $APP_HOME/policy/.open-source-hdfs-repo.json
     sed -i "s|@EMR_HDFS_URL@|$(getEmrHdfsUrl)|g" $APP_HOME/policy/.open-source-hdfs-repo.json
-    curl -iv -u admin:admin -d @$APP_HOME/policy/.open-source-hdfs-repo.json -H "Content-Type: application/json" \
+    curl -iv -u admin:$RANGER_PASSWORD -d @$APP_HOME/policy/.open-source-hdfs-repo.json -H "Content-Type: application/json" \
         -X POST $RANGER_URL/service/public/api/repository/
     sleep 5 # sleep for a while, otherwise repo may be not available for policy to refer.
     # import user default policy is required, otherwise some services have no permission to r/w its data, i.e. hbase
     cp $APP_HOME/policy/open-source-hdfs-policy.json $APP_HOME/policy/.open-source-hdfs-policy.json
     sed -i "s|@EMR_CLUSTER_ID@|$EMR_CLUSTER_ID|g" $APP_HOME/policy/.open-source-hdfs-policy.json
-    curl -iv -u admin:admin -d @$APP_HOME/policy/.open-source-hdfs-policy.json -H "Content-Type: application/json" \
+    curl -iv -u admin:$RANGER_PASSWORD -d @$APP_HOME/policy/.open-source-hdfs-policy.json -H "Content-Type: application/json" \
         -X POST $RANGER_URL/service/public/api/policy/
     echo ""
 }
@@ -249,7 +249,7 @@ initRangerOpenSourceHiveRepo() {
     cp $APP_HOME/policy/open-source-hive-repo.json $APP_HOME/policy/.open-source-hive-repo.json
     sed -i "s|@EMR_CLUSTER_ID@|$EMR_CLUSTER_ID|g" $APP_HOME/policy/.open-source-hive-repo.json
     sed -i "s|@EMR_FIRST_MASTER_NODE@|$(getEmrFirstMasterNode)|g" $APP_HOME/policy/.open-source-hive-repo.json
-    curl -iv -u admin:admin -d @$APP_HOME/policy/.open-source-hive-repo.json -H "Content-Type: application/json" \
+    curl -iv -u admin:$RANGER_PASSWORD -d @$APP_HOME/policy/.open-source-hive-repo.json -H "Content-Type: application/json" \
         -X POST $RANGER_URL/service/public/api/repository/
     echo ""
 }
@@ -304,7 +304,7 @@ initRangerOpenSourceHbaseRepo() {
     cp $APP_HOME/policy/open-source-hbase-repo.json $APP_HOME/policy/.open-source-hbase-repo.json
     sed -i "s|@EMR_CLUSTER_ID@|$EMR_CLUSTER_ID|g" $APP_HOME/policy/.open-source-hbase-repo.json
     sed -i "s|@EMR_ZK_QUORUM@|$(getEmrZkQuorum)|g" $APP_HOME/policy/.open-source-hbase-repo.json
-    curl -iv -u admin:admin -d @$APP_HOME/policy/.open-source-hbase-repo.json -H "Content-Type: application/json" \
+    curl -iv -u admin:$RANGER_PASSWORD -d @$APP_HOME/policy/.open-source-hbase-repo.json -H "Content-Type: application/json" \
         -X POST $RANGER_URL/service/public/api/repository/
     echo ""
 }
