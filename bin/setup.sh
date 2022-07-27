@@ -279,7 +279,7 @@ parseArgs() {
         skip-migrate-kerberos-db:,kerberos-realm:,kerberos-kdc-host:,kerberos-kadmin-password:,kerberos-type:,\
         solution:,enable-cross-realm-trust:,trusting-realm:,trusting-domain:,trusting-host:,ranger-version:,ranger-repo-url:,restart-interval:,ranger-host:,ranger-secrets-dir:,ranger-plugins:,\
         auth-provider:,ad-domain:,ad-base-dn:,ad-ranger-bind-dn:,ad-ranger-bind-password:,ad-hue-dn:,ad-hue-password:,ad-user-object-class:,\
-        openldap-host:,openldap-base-dn:,openldap-root-cn:,openldap-root-password:,example-users:,\
+        openldap-host:,openldap-base-dn:,openldap-root-cn:,openldap-root-password:,example-users:,openldap-user-base-dn:,\
         sssd-bind-dn:,sssd-bind-dn-password:,\
         skip-install-openldap:,openldap-user-dn-pattern:,openldap-group-search-filter:,openldap-root-dn:,openldap-ranger-bind-dn:,openldap-ranger-bind-password:,openldap-hue-bind-dn:,openldap-hue-bind-password:,openldap-user-object-class:,\
         skip-install-mysql:,mysql-host:,mysql-root-password:,mysql-ranger-db-user-password:,mysql-port:,mysql-user:,skip-install-solr:,solr-host:,\
@@ -435,6 +435,10 @@ parseArgs() {
                 ;;
             --openldap-base-dn)
                 OPENLDAP_BASE_DN="$2"
+                shift 2
+                ;;
+            --openldap-user-base-dn)
+                OPENLDAP_USERS_BASE_DN="$2"
                 shift 2
                 ;;
             --openldap-ranger-bind-dn)
